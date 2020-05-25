@@ -1,12 +1,17 @@
 import { ConflictController }  from "./controllers/ConflictController";
 import { ConfigController }    from "./controllers/ConfigController";
 
-const params = process.argv.slice(2);
+start();
 
-console.log(params[0]);
+async function start() {
+    const outParams        = process.argv.slice(2);
+    const configController = new ConfigController(outParams[0]);
+    const params           = JSON.parse(await configController.parseParams());
 
-let configController = new ConfigController();
-let variables = configController.parseParams(params[0]);
+    const conflictController = new ConflictController(params.note.customer, 
+                                                    params.note.version, 
+                                                    params.note.technology, 
+                                                    params.note.gitDirectory);
 
-let conflictController = new ConflictController(variables);
-conflictController.run();
+    conflictController.run();
+};

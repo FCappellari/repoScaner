@@ -1,25 +1,33 @@
-import { resolve } from "dns";
+const fs = require('fs');
+const parser = require('xml2js');
 
 export class ConfigController {
 
-    constructor(){
+    archive:string;
+
+    constructor(archive){
+        this.archive = archive;
     }
 
-    async parseParams(archive){
-        let fs = require('fs');
-        let parser = require('xml2js');
-        let json;
-
-        fs.readFile( archive, async function(err, data) {
-            await parser.parseString(data, { mergeAttrs: true }, async (err, result) =>{
-                return new Promise(resolve => {
-                    json = JSON.stringify(result, null, 4);
-                    console.log("1");
-                    resolve(json);
-                })
-            });         
-         });    
-     
-        console.log("2");
+    async parseParams(){
+        let json = await readXMLConvertJson(fs, this.archive, parser);
+    
+        return new Promise<string>(resolve => {
+            resolve(json);
+        });
     };
-}
+};
+
+function readXMLConvertJson(fs, archive, parser){
+    return new Promise<string>(resolve  => {
+        fs.readFile( archive, function(err, data) {
+            if (err !== null){
+                console.log("Problemas com o arquivo: " + archive);
+                return;
+            }
+            parser.parseString(data, { mergeAttrs: true },  (err, result) =>{
+                resolve(JSON.stringify(result, null, 4));
+            })
+        });         
+     });
+} 
