@@ -1,17 +1,31 @@
-import { ConflictController }  from "./controllers/ConflictController";
-import { ConfigController }    from "./controllers/ConfigController";
+import { GenerationController }  from "./controllers/generation.controller";
+import { ConfigController }    from "./controllers/config.controller";
+import { ConfigDTO } from "./models/config.model";
 
-start();
+const outParams = process.argv.slice(2);
 
-async function start() {
-    const outParams        = process.argv.slice(2);
-    const configController = new ConfigController(outParams[0]);
-    const params           = JSON.parse(await configController.parseParams());
+if (outParams[0] == "allRepository"){
+    allRepository();
+} else if(outParams[0] == "branch"){
+    oneBranch();
+};
 
-    const conflictController = new ConflictController(params.note.customer, 
-                                                    params.note.version, 
-                                                    params.note.technology, 
-                                                    params.note.gitDirectory);
+async function allRepository() {
+    const configController   = new ConfigController();
+    const config : ConfigDTO = await configController.parseParams(outParams[1]);
 
-    conflictController.run();
+    const generationController = new GenerationController(config);
+    await generationController.allRepository();
+
+    console.log("Processo concluido!");
+};
+
+async function oneBranch(){
+    const configController   = new ConfigController();
+    const config : ConfigDTO = await configController.parseParams(outParams[2]);
+
+    const generationController = new GenerationController(config);
+    await generationController.oneBranch(outParams[1]);
+
+    console.log("Processo concluido!");
 };
