@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "findit": "^2.0.0",
     "simple-git": "2.5.0",
     "xml-js": "^1.6.11",
